@@ -30,11 +30,12 @@
 		<view class="u-p-10 u-p-t-30 u-p-b-30 bg-white u-m-b-20">  
 			<view class="u-flex u-flex-between u-flex-items-center u-p-10">
 				<view class="item u-flex u-flex-items-center" style="color: #F12E24;">
-					<view>
-						<text class="u-font-28">到手价</text>
+					<view class="u-flex u-flex-items-center">
+						<!-- <text class="u-font-28">批发价</text> -->
+						<u-tag shape="circle" type="error" text="批发价" size="mini"></u-tag>
 						<text class="u-font-28 text-bold u-m-l-10">￥</text>
 						<text class="text-bold" style="font-family: cursive; font-size: 24px;">{{product_list.price1}}</text>
-						<text class="u-font-28 u-p-l-10">起</text>
+						<!-- <text class="u-font-28 u-p-l-10">起</text> -->
 					</view>
 					<view 
 						class="u-font-28 u-p-l-10 u-p-r-10 u-m-l-20" 

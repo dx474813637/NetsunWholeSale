@@ -68,7 +68,7 @@
 									v-model="product_num" 
 									:disabled="product_num_disabled"
 									:max="product_num_max"
-									:min="0"
+									:min="min"
 									asyncChange
 									inputWidth="80" 
 									@change="numChange"
@@ -163,12 +163,18 @@
 	const sku_arr = ref([]) 
 	const product_num_max = ref(Number.MAX_SAFE_INTEGER)
 	const product_num = ref(1)
+	const min = computed(() => {  
+		return product_wholesale.value?.num || 0
+	})
 	const active_sku_preview_img = ref('')
 	const product_num_disabled = computed(() => {
 		return Object.values(sku_form.value).some(ele => !ele)
 	})
 	const add_cart_disabled = computed(() => {
 		return product_num_disabled.value || product_num.value == 0
+	})
+	const product_wholesale = computed(() => { 
+		return props.product_base_data.wholesale 
 	})
 	const product_img_preview = computed(() => {
 		let img = '';
@@ -208,12 +214,11 @@
 		(val, old) => {
 			console.log(val);
 			if(val <= product_num.value) {
-				product_num.value = product_num_max.value
-				nextTick(() => {
-					countRef.value.init()
-				})
-				
-			} else product_num.value = 1
+				product_num.value = product_num_max.value 
+			} else product_num.value = min.value
+			nextTick(() => {
+				countRef.value.init()
+			})
 		} 
 	)
 	watch(
@@ -260,12 +265,16 @@
 	} 
 	
 	function numChange(e) { 
-		product_num.value = e.value
+		let num = e.value ? +e.value : 0
+		if(num < +min.value) {
+			num = +min.value
+		}
+		product_num.value = num
 		nextTick(() => {
 			countRef.value.init()
 		})
 		
-		// console.log(product_num.value)
+		console.log(product_num.value)
 	}
 	
 	function numOverlimit(e) {
@@ -273,6 +282,17 @@
 	}
 	
 	function inputBlur(e) {
+		console.log(e) 
+		let num = e.value ? +e.value : 0
+		if(num != product_num.value) {
+			if(num < +min.value) {
+				num = +min.value
+			}
+			product_num.value = num
+			nextTick(() => {
+				countRef.value.init()
+			})
+		}
 		
 	}
 	function onImgClick() {
@@ -302,9 +322,11 @@
 			...props.spec_prices[i],
 			img,
 			shop: props.product_shop_data || {},
-			name: props.product_base_data.name,
+			name: props.product_base_data.name, 
 			freight_id: props.product_base_data.freight_id,
 			num: +product_num.value,
+			min: +props.product_base_data.wholesale.num,
+			price: props.product_base_data.wholesale.price,
 			checked: props.isOrder? true :false,
 		}  
 		if(props.isOrder) {

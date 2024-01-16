@@ -91,7 +91,7 @@
 											v-model="product.num"  
 											:max="+product.stock"
 											:disabled="product.disabled"
-											:min="1" 
+											:min="product.min" 
 											asyncChange
 											:buttonSize="25"
 											@change="numChange" 
