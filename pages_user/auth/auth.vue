@@ -1,6 +1,6 @@
 <template>
 	<view class="u-p-30 bg box-border" style="padding-bottom: 60px!important;">
-		
+		<u-parse :content="onlineConfig.msg"></u-parse>
 		<template v-if="success == 1">
 			<view  class="u-p-20 u-p-l-40 bg-white u-radius-10 u-flex-column u-flex-items-center u-flex-center">
 				<view class="u-m-t-40 u-m-b-40">

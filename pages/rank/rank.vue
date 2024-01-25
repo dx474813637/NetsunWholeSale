@@ -1,13 +1,13 @@
 <template>
 	<view 
-		class="wrapper u-font-28"
+		class="wrapper u-font-28 bg-white"
 		style="padding-top: 44px;"
 		ref="page" 
 	>
-		<u-status-bar></u-status-bar>
+		<!-- <u-status-bar></u-status-bar> -->
 		<navBar
-			:bgColor="info.colour" 
-			title=""   
+			:bgColor="themeColor" 
+			:title="title"   
 			fixed
 			activeColor="#fff"
 			titleStyle="color: #fff"
@@ -23,7 +23,26 @@
 				</view>
 			</template>
 		</navBar> 
-		<view class="img-w">
+		<u-sticky customNavHeight="44" v-if="catelist.length > 0">
+			<view class="box-border tabs-w" :style="{
+				background: themeColor
+			}">  
+				<u-status-bar></u-status-bar>
+				<view class="u-p-10 box-border">
+					<u-tabs
+						:list="catelist"  
+						lineWidth="0"  
+						:current="current"
+						@click="handleTabsClick"
+						:itemStyle="{height: '35px', color: '#fff' }"
+						:activeStyle="{ color: '#fff', fontWeight: 'bold' }"
+						:inactiveStyle="{ color: '#ffe5e6' }"
+					></u-tabs> 
+				</view>
+				<view class="bg-white" style="border-radius: 20px 20px 0 0; height: 15px;"></view>
+			</view> 
+		</u-sticky>
+		<!-- <view class="img-w">
 			<up-image
 				width="100vw"
 				mode="widthFix"
@@ -33,7 +52,7 @@
 			<view class="title">
 				{{info.name}}
 			</view>
-		</view>
+		</view> -->
 		
 		<!-- <view class="top-box" :style="{
 			'height': '400rpx',
@@ -43,9 +62,9 @@
 			'background': `linear-gradient( 0deg, ${themeColor}, ${themeColor})`, 
 		}"></view> -->
 		  
-		<view class="list u-flex u-flex-wrap u-flex-items-start u-p-10 u-m-t-20"> 
+		<view class="list u-flex u-flex-wrap u-flex-items-start u-p-10 bg-white"> 
 			 <view 
-				class="list-item box-border u-p-20 uni-shadow-base bg-white u-radius-10 u-m-b-20" 
+				class="list-item box-border u-p-20  bg-white u-radius-10 " 
 				style="flex: 0 0 100%"
 				v-for="item in dataList" 
 				:key="item.id"
@@ -70,12 +89,12 @@
 							<view class="u-radius-30 u-flex " style="background-color: #EA5743; height: 38px; width: 100%;">
 								<view class="item u-flex-1 u-p-t-5 box-border u-p-l-20 u-radius-20 u-flex u-flex-items-start" style="background-color: #FDF3F1; position: relative; left: -2px;">
 									<view class="">
-										<view class="text-error u-font-20 u-m-l-10">到手价：</view>
-										<view>
+										<view class="text-error u-font-20 u-m-l-10">批发价：</view>
+										<view v-if="item.wholesale">
 											<up-text 
 												type="error" 
 												mode="price" 
-												:text="item.price1" 
+												:text="item.wholesale.price" 
 												size="16"
 												iconStyle="12" 
 											></up-text>
@@ -124,19 +143,26 @@
 	const homelist = ref({})
 	const current = ref(0)
 	const kw = ref('')
-	
+	const title = ref('')
 	const dataList = ref([])  
-	const zt = ref('')
+	const rank = ref('')
 	const info = ref({})
+	const catelist = ref([])
 	onReady(() => {
 		uni.setNavigationBarColor({
 			backgroundColor: themeColor.value,
 			frontColor: '#ffffff'
 		})
 	})
+	watch(
+		() => catelist.value,
+		(n) => {
+			current.value = catelist.value.findIndex(ele => ele.id == rank.value)
+		}
+	)
 	onLoad(async (options) => { 
 		if(options.hasOwnProperty('id')) {
-			zt.value = options.id
+			rank.value = options.id
 		}
 		else {
 			uni.reLaunch({
@@ -154,20 +180,35 @@
 		uni.navigateBack()
 	}
 	async function getData() {
-		const res = await $api.zt_detail({
-			params: {id: zt.value}
+		const res = await $api.web_product_top({
+			params: {id: rank.value}
 		})
 		if(res.code == 1) {
 			info.value = res.info
 			dataList.value = res.list
+			title.value = res.title
+			catelist.value = res.catelist
 			setOnlineControl(res)
 		}
+	}
+	 
+	function handleTabsClick(e) {  
+		base.handleGoto({
+			url: '/pages/rank/rank',
+			type: 'redirectTo',
+			params: {
+				id: e.id
+			}
+		})
 	}
 </script>
 
 <style lang="scss"> 
 </style>
 <style lang="scss" scoped>
+	.tabs-w {
+		
+	}
 	.qiang-btn {
 		position: relative; 
 	}
@@ -197,8 +238,7 @@
 	// }
 	
 	.wrapper {
-		position: relative;
-		overflow-x: hidden;
+		position: relative; 
 		background-color: #f8f8f8;
 		padding-bottom: 100px;
 		.top-box {

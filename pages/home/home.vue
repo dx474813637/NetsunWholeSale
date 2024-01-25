@@ -33,7 +33,7 @@
 		</view>
 		<view class="header u-p-t-10 u-p-b-10 box-border"> 
 			<view class="u-p-l-10 u-p-r-10 u-flex u-flex-items-center">
-				<view class="bg-white u-p-5 u-radius-30 u-flex-1">
+				<view class="bg-white u-p-5 u-radius-8 u-flex-1">
 					<SearchBase></SearchBase>
 				</view>
 				<view class="u-m-l-10 u-p-10">
@@ -49,7 +49,15 @@
 					></up-image> -->
 				</view>
 			</view> 
-			<view class="u-flex u-flex-items-center u-p-10 " v-if="catelist1.length > 0">
+			<view class="u-flex u-flex-items-center u-p-10 "
+				:style="{
+					backgroundImage: `url(${originData.bj3})`,
+					backgroundSize: '100% 100%',
+					backgroundRepeat: 'no-repeat',
+				}"
+				style="overflow: hidden;"
+				v-if="catelist1.length > 0"
+				>
 				<!-- <view class="text-nowrap u-m-r-20 u-p-10">热点商品</view> -->
 				<view class="u-flex-1 text-white" style="overflow: hidden;">
 					<u-tabs
@@ -79,25 +87,25 @@
 				</view> 
 			</view> 
 			
-			
-			<view class=" page-bg2" style="border-radius: 20px 20px 0 0;overflow: hidden;"> 
-				<view class="" v-if="swiperList1.length > 0">
-					<u-swiper
-						:list="swiperList1" 
-						keyName="img"
-						:height="150" 
-						:border-radius="13"
-						:indicator="swiperList1.length > 1"
-						imgMode="scaleToFill"
-						circular
-						bgColor="transparent"
-						@click="swiperclick1"
-					></u-swiper>
-				</view>
+			<view class="u-p-l-20 u-p-r-20 u-p-t-10" v-if="swiperList1.length > 0">
+				<u-swiper
+					:list="swiperList1" 
+					keyName="img"
+					:height="150" 
+					:border-radius="13"
+					:indicator="swiperList1.length > 1"
+					imgMode="scaleToFill"
+					circular
+					bgColor="transparent"
+					@click="swiperclick1"
+				></u-swiper>
+			</view>
+			<view class="" style=" overflow: hidden;"> 
+				
 				<view class="u-p-20">
 					<view
-						class="u-radius-8 box-border bg-white" 
-						style=" overflow: hidden;"
+						class="u-radius-8 box-border  " 
+						style=" overflow: hidden;  background-color: rgba(255,255,255,1);"
 						v-if="catelist2[0].length > 0"
 					>
 						<u-scroll-list 
@@ -109,7 +117,7 @@
 								<view
 									v-for="(ele, i) in catelist2"
 									:key="i"
-									class="u-flex u-flex-items-center nav box-border u-m-t-5"
+									class="u-flex u-flex-items-center nav box-border u-m-t-5 u-p-t-10"
 									style="width: 100%;"
 								>
 									<view 
@@ -137,8 +145,8 @@
 				
 			</view>
 			 
-			<view class="ad-w u-flex u-flex-between u-p-t-5 u-p-b-5 bg-white" v-if="list && list.length > 0">
-				<view class="item u-p-10 u-flex-1" v-for="(item,index) in list2" :key="index">
+			<view class="ad-w u-flex u-flex-between u-p-t-5 u-p-b-5 u-p-l-10 u-p-r-10 box-border page-bg2" v-if="list && list.length > 0">
+				<view class="item u-p-10 u-flex-1" v-for="(item,index) in list" :key="index">
 					<view @click="goto(item)">
 						<zeroLazyLoad
 							:image="item.img" 
@@ -149,7 +157,7 @@
 					</view> 
 				</view>
 			</view>
-			<view class="ad-w u-flex u-flex-between u-p-t-5 u-p-b-5 bg-white" v-if="list2 && list2.length > 0">
+			<view class="ad-w u-flex u-flex-between u-p-t-5 u-p-b-5 u-p-l-10 u-p-r-10" v-if="list2 && list2.length > 0">
 				<view class="item u-p-10 u-flex-1" v-for="(item,index) in list2" :key="index">
 					<view @click="goto(item)">
 						<zeroLazyLoad
@@ -168,7 +176,7 @@
 	</view> 
 	<view class="u-p-t-20" v-if="zt && zt.length > 0"> 
 		<u-scroll-list
-			indicator 
+			:indicator="zt.length > 1"
 			indicatorColor="#f3dedf" 
 			:indicatorActiveColor="themeColor"
 		>
@@ -183,7 +191,7 @@
 					<view class="card-header u-flex u-flex-between u-flex-items-center u-p-10">
 						<view class="u-flex u-flex-items-baseline">
 							<view class="text-bold u-font-36 u-flex u-flex-items-center">
-								<view class="u-error">
+								<view class="text-black" >
 									{{item.name}}
 								</view>
 								<!-- <view class="u-error">精选</view>
@@ -202,9 +210,9 @@
 						</view>
 					</view> 
 					<view class="u-flex u-flex-between card-main">
-						<view class="item u-p-10 item-left box-border">
+						<view class="item u-p-10 item-left box-border u-flex-1" @click="goto({url: item.url1})" >
 							<zeroLazyLoad
-								:image="item.list[0].pic.split('|')[0]" 
+								:image="item.pic1" 
 								imgMode="aspectFill" 
 								height="100%"
 								border-radius="16"
@@ -213,46 +221,82 @@
 						<view class="item item-right u-flex-column u-flex-between u-flex-1">
 							<view class="u-flex-1 box-border u-flex" >
 								<view class="u-flex-1 u-p-10 box-border">
-									<view style="width: 100%; height: 100%;" class="u-radius-8">
-										<zeroLazyLoad
-											:image="item.list[1].pic.split('|')[0]" 
-											imgMode="scaleToFill" 
-											height="100%"
-											border-radius="16"
-											></zeroLazyLoad>
+									<view class="zt-img-w u-radius-8"  v-if="item.list[0]"
+										@click="base.handleGoto({
+											url: '/pages/product/productDetail',
+											params: {
+												id: item.list[0].id
+											}
+										})"
+									>
+										<view class="zt-img">
+											<zeroLazyLoad
+												:image="item.list[0].pic.split('|')[0]" 
+												imgMode="scaleToFill" 
+												height="100%"
+												border-radius="16"
+												></zeroLazyLoad>
+										</view> 
 									</view> 
 								</view>
 								<view class="u-flex-1 u-p-10 box-border">
-									<view style="width: 100%; height: 100%;" class="u-radius-8">
-										<zeroLazyLoad
-											:image="item.list[2].pic.split('|')[0]" 
-											imgMode="scaleToFill" 
-											height="100%"
-											border-radius="16"
-											></zeroLazyLoad>
+									<view class="zt-img-w u-radius-8"  v-if="item.list[1]"
+										@click="base.handleGoto({
+											url: '/pages/product/productDetail',
+											params: {
+												id: item.list[1].id
+											}
+										})"
+									>
+										<view class="zt-img">
+											<zeroLazyLoad
+												:image="item.list[1].pic.split('|')[0]" 
+												imgMode="scaleToFill" 
+												height="100%"
+												border-radius="16"
+												></zeroLazyLoad>
+										</view> 
 									</view> 
 								</view>
 								
 							</view>
 							<view class="u-flex-1 box-border u-flex" >
 								<view class="u-flex-1 u-p-10 box-border">
-									<view style="width: 100%; height: 100%;" class="u-radius-8">
-										<zeroLazyLoad
-											:image="item.list[3].pic.split('|')[0]" 
-											imgMode="scaleToFill" 
-											height="100%"
-											border-radius="16"
-											></zeroLazyLoad>
+									<view class="zt-img-w u-radius-8"  v-if="item.list[2]"
+										@click="base.handleGoto({
+											url: '/pages/product/productDetail',
+											params: {
+												id: item.list[2].id
+											}
+										})"
+									>
+										<view class="zt-img">
+											<zeroLazyLoad
+												:image="item.list[2].pic.split('|')[0]" 
+												imgMode="scaleToFill" 
+												height="100%"
+												border-radius="16"
+												></zeroLazyLoad>
+										</view> 
 									</view> 
 								</view>
 								<view class="u-flex-1 u-p-10 box-border">
-									<view style="width: 100%; height: 100%;" class="u-radius-8">
-										<zeroLazyLoad
-											:image="item.list[4].pic.split('|')[0]" 
-											imgMode="scaleToFill" 
-											height="100%"
-											border-radius="16"
-											></zeroLazyLoad>
+									<view class="zt-img-w u-radius-8"  v-if="item.list[3]"
+										@click="base.handleGoto({
+											url: '/pages/product/productDetail',
+											params: {
+												id: item.list[3].id
+											}
+										})"
+									>
+										<view class="zt-img">
+											<zeroLazyLoad
+												:image="item.list[3].pic.split('|')[0]" 
+												imgMode="scaleToFill" 
+												height="100%"
+												border-radius="16"
+												></zeroLazyLoad>
+										</view> 
 									</view> 
 								</view>
 								
@@ -263,7 +307,13 @@
 			</view>
 		</u-scroll-list>
 	</view> 
-	 
+	<view class=" box-border" style="width: 100%;" v-if="originData.bj2">
+		<zeroLazyLoad
+			:image="originData.bj2" 
+			imgMode="widthFix" 
+			height="auto" 
+			></zeroLazyLoad>
+	</view> 
 	<view class="list u-flex u-flex-wrap u-flex-items-start u-p-10" >
 		 <view 
 			class="list-item u-p-14" 
@@ -439,6 +489,21 @@
 </script>
 
 <style lang="scss" scoped>
+.zt-img-w {
+	position: relative;
+	// width: 100%;
+	// padding-top: 100%;
+	width: 100px;
+	height: 100px;
+	.zt-img {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		
+	}
+}
 .zt-item {
 	width: 100vw;
 	flex: 0 0 100vw;  
@@ -469,7 +534,7 @@
 	}
 }
 .card-main {
-	height: 200px;
+	height: 220px;
 	box-sizing: border-box;
 	.item {
 		height: 100%;
@@ -477,10 +542,12 @@
 		box-sizing: border-box; 
 	}
 	.item-left {
-		flex: 0 0 40%;
+		// flex: 0 0 40%; 
+		flex: 0 0 calc(100% - 220px);
 	}
 	.item-right {
-		flex: 0 0 60%;
+		flex: 0 0 220px;
+		// flex: 0 0 60%;
 	}
 }
 .swiper-w, .card-w {

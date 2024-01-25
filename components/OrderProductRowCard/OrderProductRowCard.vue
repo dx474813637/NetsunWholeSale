@@ -22,15 +22,16 @@
 		</view>
 		<view class="item u-m-l-30 info u-font-28 u-text-right" >
 			<view class="u-flex u-flex-items-center" >
-				<text class="u-font-24">￥</text>
-				<u-count-to
+				<!-- <text class="u-font-24">￥</text> -->
+				<!-- <u-count-to
 				:autoplay="false" 
-				:startVal="product.price" 
+				:startVal="product.pprice" 
 				separator="," 
 				:decimals="2"
 				fontSize="14" 
 				color="#000"
-				></u-count-to>
+				></u-count-to> -->
+				<up-text mode="price" :text="product.pprice" size="14"></up-text>
 			</view>
 			
 			<view class="u-info">x {{product.num}}</view> 

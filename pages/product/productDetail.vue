@@ -32,25 +32,36 @@
 				<view class="item u-flex u-flex-items-center" style="color: #F12E24;">
 					<view class="u-flex u-flex-items-center">
 						<!-- <text class="u-font-28">批发价</text> -->
-						<u-tag shape="circle" type="error" text="批发价" size="mini"></u-tag>
+						<!-- <u-tag shape="circle" type="error" text="批发价" size="mini"></u-tag> -->
+						<text 
+							class="u-error-bg u-font-24 text-white u-p-8 u-p-l-15 u-p-r-15" 
+							style="border-radius: 10px 0 10px 0; background-image: linear-gradient(to right, #FD482F, #F71380);"
+						>批发价</text>
 						<text class="u-font-28 text-bold u-m-l-10">￥</text>
-						<text class="text-bold" style="font-family: cursive; font-size: 24px;">{{product_list.price1}}</text>
+						<text class="text-bold" style="font-family: cursive; font-size: 24px;">{{product_wholesale.price}}</text>
 						<!-- <text class="u-font-28 u-p-l-10">起</text> -->
 					</view>
-					<view 
-						class="u-font-28 u-p-l-10 u-p-r-10 u-m-l-20" 
-						style="background-color: #f9dada; text-decoration: line-through;"
-						v-if="product_list.price"
-					> 
-						<text>￥</text>
-						<text style="font-family: cursive;">{{product_list.price}}</text>
-					</view>
+					
 				</view>
-				<view class="item u-font-28 u-info">已售{{product_list.sales_volume}}件</view>
+				<view class="item u-font-28 u-info">
+					<view class="u-flex u-flex-between" @click="ToMiniProgram(product_list.xcx)">
+						<text class="u-font-28 u-p-l-10 u-p-r-10 u-m-l-20"  v-if="product_list.price1">
+							<text
+								class=" u-font-20 u-p-8 u-p-l-15 u-p-r-15" 
+								style="border-radius: 10px 0 10px 0; background-image: linear-gradient(to right, #eae6e6, #d0c0c0);color: #000000;"
+							>特卖价</text>
+							<text>￥</text>
+							<text>{{product_list.price1}}</text>
+							<text> 已售{{product_list.sales_volume}}件</text>
+						</text>
+						<u-icon name="arrow-right-double" color="#999" size="20"></u-icon>
+					</view>
+					
+				</view>
 			</view>
 			<view class="bg-white u-radius-8 u-p-10">
 				<view class="u-flex u-flex-between u-flex-items-start u-p-t-10 u-p-b-10 u-m-b-20">
-					<view class="item u-font-36">
+					<view class="item u-font-36" style="word-break: break-all;">
 						{{product_list.name}}
 					</view> 
 					<view class="item u-p-l-20">
@@ -152,7 +163,7 @@
 						{{company_list.service}}
 					</view>
 				</view> 
-				<u-line length="100%" margin="10px 0"></u-line>
+				<!-- <u-line length="100%" margin="10px 0"></u-line>
 				<view class="u-flex u-flex-between u-flex-items-center u-p-10 u-p-b-14 u-p-t-14">
 					<view class="item text-bold">发现笔记</view>
 					<view class="item u-flex u-flex-items-baseline" @click="base.handleGoto({url: 'pages_note/note/noteList', params: {id: product_id}})">
@@ -167,7 +178,7 @@
 							imgHeight="120px"
 						></noteCard>  
 					</view>
-				</view>
+				</view> -->
 			</view> 
 		</view>
 		<view class="pro-desc">
@@ -281,6 +292,9 @@
 	const product_id = ref('')
 	const origin = ref({})
 	const product_list = ref({})
+	const product_wholesale = computed(() => {
+		return product_list.value?.wholesale || {}
+	})
 	const express_info = ref({})
 	const company_list = ref({})
 	const spec_prices = ref([])
@@ -364,6 +378,15 @@
 		base.handleGoto({
 			url: '/pages_user/order/orderCreate',
 			type: 'reLaunch'
+		})
+	}
+	function ToMiniProgram(data) {
+		uni.navigateToMiniProgram({
+		  appId: data.appid,
+		  path: data.path,
+		  success(res) {
+		    // 打开成功
+		  }
 		})
 	}
 	async function getData() {

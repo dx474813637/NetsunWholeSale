@@ -209,3 +209,6 @@ export const product_longs_detail = (data) => http.get('product_longs_detail', d
 export const add_product_longs = (data, config={}) => http.post('add_product_longs', data, config) 
 // get_vod_sign 获取视频上传签名
 export const get_vod_sign = (data, config={}) => http.post('get_vod_sign', data, config) 
+
+// web_product_top 排行
+export const web_product_top = (data) => http.get('web_product_top', data)

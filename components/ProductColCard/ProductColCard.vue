@@ -23,26 +23,28 @@
 			 /> -->
 		</view>
 		<slot name="content">
-			<view class="content-w u-p-20 u-font-32">
-				<view class="u-line-1 u-m-b-10">
+			<view class="content-w u-p-20 ">
+				<view class="u-line-2 u-m-b-10 u-font-28" style="height: 40px;">
 					{{origin.name}}
 				</view>
-				<view class="u-flex u-flex-between u-flex-items-center u-m-b-10"> 
-					<view class="u-font-32" style=" color: #fa3534;">
+				<view class="u-flex u-flex-between u-flex-items-center u-m-b-10 u-font-26"> 
+					<view class="u-font-32 u-flex u-flex-items-center" style=" color: #fa3534;">
 						<text class="u-font-28">￥</text>
-						<text class="text-bold u-font-38" style="font-family: cursive;">{{origin.price1}}</text> 
+						<!-- <text class="text-bold u-font-38" style="font-family: cursive;">{{origin.price1}}</text> -->
+						<text class="text-bold u-font-38" style="font-family: cursive;" v-if="origin.wholesale">{{origin.wholesale.price}}</text> 
+						<view class="u-font-24 u-p-5 u-p-l-8 u-p-r-8 u-radius-5 text-white u-m-l-10" style="background-image: linear-gradient(to right, #FD482F, #F71380);">批</view>
 					</view>
 					<!-- <view class="u-info u-font-26">已售{{origin.sales_volume}}件</view> -->
 				</view>
-				<view class="u-flex u-flex-items-center u-flex-between  u-m-b-10"  
+				<view class="u-flex u-flex-items-center u-flex-between u-font-26 u-m-b-10"  
 					v-if="origin.price"
 				>  
-					<view class="item u-font-28 u-info " style=" text-decoration: line-through;">
+					<view class="item  u-info " style=" text-decoration: line-through;">
 						<text>￥</text>
 						<text>{{origin.price}}</text>
 					</view>
 					<view class="item " >
-						<view class="u-info u-font-26">已售{{origin.sales_volume}}件</view>
+						<view class="u-info">已售{{origin.sales_volume}}件</view>
 						<!-- <view class="u-info u-font-26">{{$u.timeFrom(new Date(origin.uptime).getTime(), false)}}</view> -->
 					</view>
 				</view>

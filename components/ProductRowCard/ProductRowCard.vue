@@ -30,7 +30,8 @@
 					<view class="item">
 						<view class="item u-font-28 u-info" style=" text-decoration: line-through;">
 							<text>￥</text>
-							<text>{{origin.price}}</text>
+							<!-- <text>{{origin.price}}</text> -->
+							<text v-if="origin.wholesale">{{origin.wholesale.price}}</text>
 						</view>
 						<view class="u-flex u-flex-items-center">
 							<view class="u-font-32" style=" color: #fa3534;">

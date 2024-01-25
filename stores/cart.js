@@ -33,14 +33,14 @@ export const useCartStore = defineStore('cart', {
 			if(!this.cart_list || this.cart_list.length == 0) return []
 			let arr = this.cart_list.map(ele => {
 				let products_checked = ele.products.filter(item => item.checked);
-				console.log(products_checked)
+				// console.log(products_checked)
 				if(products_checked.length == 0) return false;
 				return {
 					...ele,
 					products: products_checked
 				}
 			}).filter(ele => ele !== false)
-			console.log(arr)
+			// console.log(arr)
 			return arr
 		},
 		cart_list_checked_num() {
@@ -143,7 +143,7 @@ export const useCartStore = defineStore('cart', {
 					datas.products.unshift(data)
 				}else {
 					data.num = (+data.num) + (+datas.products[productIndex].num)
-					console.log(data.num)
+					// console.log(data.num)
 					data.checked = datas.products[productIndex].checked 
 					let item = uni.$u.deepClone(datas.products[productIndex])
 					item = deepMerge(item, data)  
@@ -180,25 +180,43 @@ export const useCartStore = defineStore('cart', {
 			return true
 		},
 		setPidSku(arr, idStr) { 
-			this.cart_list.forEach((cart ) => {
-				cart.products.forEach((item) => {
+			this.cart_list = this.cart_list.map((cart ) => {
+				cart.products = cart.products.map((item) => {
 					let itemIndex = arr.findIndex((ele) => ele.id == item.id)
 					if(itemIndex != -1) { 
-						let itemObj = arr[itemIndex]
+						let itemObj = arr[itemIndex] 
 						item = {
 							...item,
 							img: itemObj.img? itemObj.img : item.img,
 							stock: +itemObj.stock,
-							num: +(itemObj.stock > item.num? item.num : itemObj.stock),
-							price: itemObj.price
+							// num: +(itemObj.stock > item.num? item.num : itemObj.stock),
+							num: +item.num,
+							price: itemObj.pprice, 
+							min: +itemObj.znum, 
 						} 
+						
+						if( item.min > item.stock ) {
+							item.disabled = true
+							item.checked = false
+							item.num = 0
+						}
+						else {
+							if(item.num < item.min) {
+								item.num = item.min
+							}
+							if(item.num > item.stock) {
+								item.num = item.stock
+							}
+						} 
+						
 					}else if(idStr.includes(item.id)) { 
 						item.disabled = true
 						item.checked = false
 					} 
+					return item
 				}) 
-			})
-			// console.log(this.cart_list)
+				return cart
+			}) 
 		},
 		async getPidSku(idStr) { 
 			if(!idStr) return 

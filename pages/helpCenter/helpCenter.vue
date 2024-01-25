@@ -88,7 +88,7 @@
 							height="30px" 
 							src="https://wstm.y.netsun.com/Public/tb/wd099.png"  
 						></up-image>
-						<text class="text-black u-line-1 u-m-l-30 u-font-32">在线客服( 9:00 至 21:00 )</text>
+						<text class="text-black u-line-1 u-m-l-30 u-font-32">在线客服( 9:00 至 20:00 )</text>
 					</view> 
 				</view>
 			</button>

@@ -20,7 +20,7 @@
 						<view class="text-bold u-line-1 u-m-b-20">{{product_base_data.name}}</view>
 						<view class="text-error">
 							<text class="u-font-28 text-bold">￥</text>
-							<text class=" text-bold u-font-38" style="font-family: cursive; ">{{active_sku_price}}</text> 
+							<text class=" text-bold u-font-38" style="font-family: cursive; ">{{product_wholesale.price}}</text> 
 						</view>
 					</view>
 					
@@ -174,7 +174,7 @@
 		return product_num_disabled.value || product_num.value == 0
 	})
 	const product_wholesale = computed(() => { 
-		return props.product_base_data.wholesale 
+		return props.product_base_data?.wholesale || {}
 	})
 	const product_img_preview = computed(() => {
 		let img = '';

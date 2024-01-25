@@ -141,6 +141,10 @@
 	}
 </style>
 <style lang="scss" scoped>
+	.w {
+		position: relative;
+		z-index: 1000;
+	}
 	.dot-w {
 		position: relative;
 		.dot {

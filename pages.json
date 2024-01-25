@@ -268,7 +268,7 @@
 					"navigationBarTitleText": "售后列表",
 					"enablePullDownRefresh": false,
 					"onReachBottomDistance": 80,
-					"navigationBarBackgroundColor": "#f8f8f8",
+					"navigationBarBackgroundColor": "#f8f8f8" ,
 					"usingComponents": {
 						"sales-return": "plugin://logisticsPlugin/sales-return"
 					}

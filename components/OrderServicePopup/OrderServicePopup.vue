@@ -92,8 +92,17 @@
 																<text class="u-font-32">{{product.price}}</text> 
 															</view>
 														</view>
-														<view class="item u-m-r-15">
-															<u-number-box
+														<view class="item u-m-r-15 u-flex"> 
+															<view class="u-flex u-flex-items-center" style="width: 100px;" @click="showNumberPopup(product)">
+																<up-input 
+																	v-model="product.count"
+																	readonly 
+																	suffixIcon="arrow-down" 
+																	suffixIconStyle="font-size: '14px'"
+																></up-input>
+															</view>
+															
+															<!-- <u-number-box
 																:ref="(el) => setRef(el, product.id)" 
 																:name="product.id"
 																v-model="product.count"  
@@ -103,7 +112,7 @@
 																asyncChange
 																:buttonSize="25"
 																@change="numChange" 
-																></u-number-box>
+																></u-number-box> -->
 														</view>
 													</view>
 												</view>
@@ -195,7 +204,19 @@
 					<u-button type="error" shape="circle" @click="serviceBtn">我要售后</u-button>
 				</view>
 			</template>
-		</PopupNormal>
+		</PopupNormal> 
+		
+		<u-picker 
+			:show="show" 
+			:columns="columns" 
+			keyName="label"
+			@cancel="cancelBtn"
+			@close="cancelBtn"
+			@confirm="confirm"
+			closeOnClickOverlay
+			title="选择需要售后的数量"
+			:customStyle="{borderTop: '1rpx solid #666'}"
+		></u-picker>
 	</view>  
 </template>
 
@@ -228,6 +249,24 @@
 			},
 		}
 	})    
+	const show = ref(false);
+	const columns = reactive([
+		[
+			{
+				label: '1件',
+				value: 1
+			},
+			// {
+			// 	label: '2件',
+			// 	value: 2
+			// },
+			{
+				label: '全部',
+				value: 'all'
+			},
+		]
+	]);
+	const clickTargetId = ref('')
 	const emits = defineEmits(['submitService'])
 	const products = ref([])
 	const serviceFormShow = ref(false)  
@@ -422,6 +461,26 @@
 	}
 	function groupChange(e) {
 		uForm.value.validateField('cate')
+	}
+	const confirm = (e) => {
+		attrs.onUpdateShow(true)
+		console.log('confirm', e);
+		show.value = false;
+		let index = products.value.findIndex(ele => ele.id == clickTargetId.value)
+		products.value[index].count = e.value[0].value == 'all' ? products.value[index].num : e.value[0].value
+		
+		clickTargetId.value = ''
+	};
+	function showNumberPopup(product) {
+		console.log(attrs)
+		attrs.onUpdateShow(false)
+		clickTargetId.value = product.id
+		show.value = true;
+	}
+	function cancelBtn() {
+		attrs.onUpdateShow(true)
+		clickTargetId.value = ''
+		show.value = false;
 	}
 </script>
 

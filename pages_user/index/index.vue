@@ -1,98 +1,103 @@
 <template>
 	<view class="wrapper ">
-		<navBar bgColor="#fff" title="个人中心" ></navBar>
-		<!-- <u-status-bar></u-status-bar> -->
-		<!-- <u-notify ref="notify"></u-notify> -->
-		<view class="bg-white u-m-b-25 u-p-b-20">
-			<view class="step3 user  u-p-l-30 u-p-r-30 u-p-b-20 u-p-t-50 bg-white">
-				<view class="u-flex u-flex-items-start">
-					<view class="u-flex u-flex-items-start u-flex-1" @click="showUserInfo = true">
-						<template v-if="user_info.img">
-							<view class="u-m-r-20">
-								<up-image 
-									show-loading
-									:src="user_info.img" 
-									width="50px" 
-									height="50px"  
-									shape="circle"
-									></up-image>
-							</view>
-						</template>
-						<template v-else>
-							<view class="user-img u-flex u-flex-items-center u-flex-center" >
-								<i class="custom-icon-myfill custom-icon"></i>
-							</view>
-						</template>
-							 
-						<view class="user-info u-flex-1" > 
-							<view class="item u-flex u-flex-items-center u-m-b-6"> 
-								<view class="u-m-r-14 text-nowrap" v-if="user_info.role_name">
-									<u-tag :text="user_info.role_name" size="mini" type="error" borderColor="transparent"></u-tag>
-								</view> 
-								<view class="name u-line-1 u-font-38 step7">{{user_info.name || '暂无昵称'}}</view> 
-							</view>
-							<view class="item" >
-								<view class="sub2 u-font-28 step9 text-light u-flex u-flex-items-center">
-									<text >点击编辑信息</text> 
-									<i class="custom-icon-edit custom-icon u-font-28 text-light u-m-l-10"></i>
+		<view class="bg-white header-w" :style="{
+			backgroundImage: `linear-gradient(to bottom, #FFF6ED, #fff 260px)`,
+		}">
+			<navBar bgColor="transparent" title="个人中心" ></navBar>
+			<!-- <u-status-bar></u-status-bar> -->
+			<!-- <u-notify ref="notify"></u-notify> -->
+			<view class=" u-m-b-25 u-p-b-20">
+				<view class="step3 user  u-p-l-30 u-p-r-30 u-p-b-20 u-p-t-50 ">
+					<view class="u-flex u-flex-items-start">
+						<view class="u-flex u-flex-items-start u-flex-1" @click="showUserInfo = true">
+							<template v-if="user_info.img">
+								<view class="u-m-r-20">
+									<up-image 
+										show-loading
+										:src="user_info.img" 
+										width="50px" 
+										height="50px"  
+										shape="circle"
+										></up-image>
 								</view>
+							</template>
+							<template v-else>
+								<view class="user-img u-flex u-flex-items-center u-flex-center" >
+									<i class="custom-icon-myfill custom-icon"></i>
+								</view>
+							</template>
+								 
+							<view class="user-info u-flex-1" > 
+								<view class="item u-flex u-flex-items-center u-m-b-6"> 
+									<view class="u-m-r-14 text-nowrap" v-if="user_info.role_name">
+										<u-tag :text="user_info.role_name" size="mini" type="error" borderColor="transparent"></u-tag>
+									</view> 
+									<view class="name u-line-1 u-font-38 step7">{{user_info.name || '暂无昵称'}}</view> 
+								</view>
+								<view class="item" >
+									<view class="sub2 u-font-28 step9 text-thin u-flex u-flex-items-center">
+										<text >点击编辑信息</text> 
+										<i class="custom-icon-edit custom-icon u-font-28 u-m-l-10"></i>
+									</view>
+								</view> 
+								
 							</view> 
-							
 						</view> 
-					</view> 
-					<DingYue></DingYue>
+						<DingYue></DingYue>
+					</view>
+					
 				</view>
-				
-			</view>
-			<view class="u-p-15 u-p-l-20 u-p-r-20 u-flex u-flex-between u-flex-items-center bg-white u-font-26" v-if="balance">
-				<view class="num-label item u-p-r-15" >
-					<view class="bg u-flex u-flex-items-center u-flex-between u-p-20 u-radius-5">
-						<view class="u-flex u-flex-items-center">
-							<view class="u-m-r-10 u-info">可提现</view>
-							<u-count-to 
-								:endVal="balance.extract"
-								decimals="2"
-								separator=","
-								duration="500"
-								fontSize="15"
-								bold
-								color="#000"
-							></u-count-to>
-						</view>
-						<view>
-							<u-icon name="arrow-right" color="#ccc" size="14"></u-icon>
+				<view class="u-p-15 u-p-l-20 u-p-r-20 u-flex u-flex-between u-flex-items-center u-font-26" v-if="balance">
+					<view class="num-label item u-p-r-15" >
+						<view class="bg u-flex u-flex-items-center u-flex-between u-p-20 u-radius-5">
+							<view class="u-flex u-flex-items-center">
+								<view class="u-m-r-10 u-info">可提现</view>
+								<u-count-to 
+									:endVal="balance.extract"
+									decimals="2"
+									separator=","
+									duration="500"
+									fontSize="15"
+									bold
+									color="#000"
+								></u-count-to>
+							</view>
+							<view>
+								<u-icon name="arrow-right" color="#ccc" size="14"></u-icon>
+							</view>
 						</view>
 					</view>
-				</view>
-				<view class="num-label item u-p-l-15" >
-					<view class="bg u-flex u-flex-items-center u-flex-between u-p-20 u-radius-5">
-						<view class="u-flex u-flex-items-center">
-							<view class="u-m-r-10 u-info">可分账</view>
-							<u-count-to 
-								:endVal="balance.divide"
-								decimals="2"
-								separator=","
-								duration="500"
-								fontSize="15"
-								bold
-								color="#000"
-							></u-count-to>
-						</view>
-						<view>
-							<u-icon name="arrow-right" color="#ccc" size="14"></u-icon>
+					<view class="num-label item u-p-l-15" >
+						<view class="bg u-flex u-flex-items-center u-flex-between u-p-20 u-radius-5">
+							<view class="u-flex u-flex-items-center">
+								<view class="u-m-r-10 u-info">可分账</view>
+								<u-count-to 
+									:endVal="balance.divide"
+									decimals="2"
+									separator=","
+									duration="500"
+									fontSize="15"
+									bold
+									color="#000"
+								></u-count-to>
+							</view>
+							<view>
+								<u-icon name="arrow-right" color="#ccc" size="14"></u-icon>
+							</view>
 						</view>
 					</view>
+				</view> 
+				<view class="u-p-15 u-p-l-20 u-p-r-20 u-flex u-flex-between u-flex-items-center u-font-26 " v-if="menus_ad.img">
+					<image 
+						@click="handleMenusClick({url: menus_ad.url, type: 3})"
+						style="width: 100%;"
+						class="u-radius-5"
+						:src="menus_ad.img" 
+						mode="widthFix"
+					></image>
 				</view>
-			</view> 
-			<view class="u-p-15 u-p-l-20 u-p-r-20 u-flex u-flex-between u-flex-items-center bg-white u-font-26 " v-if="menus_ad.img">
-				<image 
-					@click="handleMenusClick({url: menus_ad.url, type: 3})"
-					style="width: 100%;"
-					class="u-radius-5"
-					:src="menus_ad.img" 
-					mode="widthFix"
-				></image>
 			</view>
+			
 		</view>
 		<view class="u-p-20">
 		 	<!-- 我的菜单列表 远程控制 -->
@@ -213,6 +218,7 @@
 	// baseNotify(notify) 
 	const base = baseStore()
 	const menus = menusStore()
+	const { themeColor } = toRefs(base)
 	const { menus_wd, menus_wd1, menus_ad } = toRefs(menus)
 	const user = userStore()
 	const {user_info, balance} = toRefs(user)
@@ -280,11 +286,16 @@
 	}
 </style>
 <style lang="scss" scoped>
+	.header-w {
+		position: relative;
+		background-image: linear-gradient(to bottom, #ff5473, #fff);
+	}
 	.num-label {
 		flex: 0 0 50%;
 		box-sizing: border-box;
 		.bg {
-			background-color: #f9f9f9;
+			// background-color: #f9f9f9;
+			background-color: rgba(255,255,255,.6);
 		}
 		
 	}

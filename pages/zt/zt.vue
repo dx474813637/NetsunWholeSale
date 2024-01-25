@@ -66,7 +66,7 @@
 											<up-text 
 												type="error" 
 												mode="price" 
-												:text="item.price1" 
+												:text="item.wholesale.price" 
 												size="17"
 												iconStyle="12" 
 											></up-text>
@@ -111,12 +111,12 @@
 								<view class="u-radius-30 u-flex " style="background-color: #EA5743; height: 38px; width: 100%;">
 									<view class="item u-flex-1 u-p-t-5 box-border u-p-l-20 u-radius-20 u-flex u-flex-items-start" style="background-color: #FDF3F1; position: relative; left: -2px;">
 										<view class="">
-											<view class="text-error u-font-20 u-m-l-10">到手价：</view>
-											<view>
+											<view class="text-error u-font-20 u-m-l-10">批发价：</view>
+											<view v-if="item.wholesale">
 												<up-text 
 													type="error" 
 													mode="price" 
-													:text="item.price1" 
+													:text="item.wholesale.price" 
 													size="16"
 													iconStyle="12" 
 												></up-text>

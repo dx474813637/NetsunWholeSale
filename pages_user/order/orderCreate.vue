@@ -83,10 +83,10 @@
 			</view>
 		</view>
 	</view>
-	<view class="bg-white u-m-b-30 u-p-20 u-p-t-30 u-p-t-30 u-flex u-flex-between u-flex-items-center">
+	<!-- <view class="bg-white u-m-b-30 u-p-20 u-p-t-30 u-p-t-30 u-flex u-flex-between u-flex-items-center">
 		<view class="text-base">无忧退货（运费险）</view>
 		<view class="u-flex-1 u-p-l-30 u-flex u-flex-end">商家赠送</view>
-	</view>
+	</view> -->
 	<view class="bg-white u-m-b-30 u-p-40 u-flex u-flex-between u-flex-items-center">
 		<view class="">备注</view>
 		<view class="u-flex-1 u-p-l-30">
