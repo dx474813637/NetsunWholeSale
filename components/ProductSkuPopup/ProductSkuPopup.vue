@@ -27,7 +27,7 @@
 				</view>
 				<scroll-view class="main-list" scroll-y >
 					<view class="u-p-30">
-						<view class="item u-m-b-40" v-for="item in spec_prices_arr" :key="item.id">
+						<view class="item u-m-b-40" v-for="(item, i) in spec_prices_arr" :key="item.id">
 							<view class="u-m-b-10">
 								<text 
 									class="u-font-26 u-p-8 u-p-l-12 u-p-r-12 u-radius-5 u-error-light-bg u-m-r-14" 
@@ -35,20 +35,20 @@
 									:key="index"
 								>{{val}}</text>
 							</view>
-							<view class="u-flex u-flex-items-end u-flex-between u-font-26 text-base">
+							<view class="u-flex u-flex-items-center u-flex-between u-font-26 text-base">
 								<view class="u-flex u-flex-items-center">
 									<view class="u-m-r-20">价格：{{item.price}}元</view>
 									<view>库存：{{item.stock}}</view>
 								</view>
 								<view> 
 									<u-number-box  
-										v-model="item.checked_num" 
-										:disabled="product_num_disabled"
+										:ref="el => setRef(el, i)"
+										v-model="item.num"  
 										:max="item.stock"
 										:min="0"
 										asyncChange
 										inputWidth="60" 
-										@change="numChange"
+										@change="(e) => {numChange(e, item.id, i)}"
 										@blur="inputBlur"
 										@overlimit="numOverlimit"
 									></u-number-box>
@@ -56,7 +56,7 @@
 							</view>
 						</view>
 					</view>
-					<view class="u-p-30">
+					<!-- <view class="u-p-30" >
 						<view class="item u-m-b-20"
 							v-for="(item) in sku_arr"
 							:key="item.label"
@@ -108,7 +108,7 @@
 							</view>
 						</view>
 					</view>
-					
+					 -->
 				</scroll-view> 
 			</view>  
 			<template #footer>
@@ -118,11 +118,8 @@
 					@click="addCartBtn" 
 					:disabled="add_cart_disabled"
 					type="error"
-					>
-						<template v-if="product_num_disabled">请选择规格</template>
-						<template v-else-if="add_cart_disabled">请选择数量</template>
-						<template v-else-if="isOrder" >立即购买</template>
-						<template v-else >加入购物车</template>
+					> 
+						{{confirmBtnText}}
 					</u-button>
 				</view>
 			</template>
@@ -188,7 +185,7 @@
 		}
 	})   
 	const emits = defineEmits(['onConfirm'])
-	const countRef = ref()
+	const countRefs = ref([])
 	const sku_form = ref({})
 	const sku_arr = ref([]) 
 	const spec_prices_arr = ref([]) 
@@ -200,13 +197,20 @@
 	})
 	const active_sku_preview_img = ref('')
 	const product_num_disabled = computed(() => {
-		return Object.values(sku_form.value).some(ele => !ele)
+		return Object.values(sku_form.value).some(ele => !ele) 
 	})
-	const add_cart_disabled = computed(() => {
-		return product_num_disabled.value || product_num.value == 0
+	const checked_product_num = computed(() => {
+		return spec_prices_arr.value.reduce((prev, items) => prev + items.num, 0)
 	})
 	const product_wholesale = computed(() => { 
 		return props.product_base_data?.wholesale || {}
+	})
+	const add_cart_disabled = computed(() => {
+		// return product_num_disabled.value || product_num.value == 0
+		if(props.isOrder) {
+			return checked_product_num.value < product_wholesale.value.num
+		}
+		return checked_product_num.value == 0
 	})
 	const product_img_preview = computed(() => {
 		let img = '';
@@ -229,7 +233,17 @@
 		} 
 		return price 
 	})
-	
+	const confirmBtnText = computed(() => {
+		let text = ''
+		if(props.isOrder) {
+			if(product_wholesale.value.num > checked_product_num.value) text = `注意商品起批数量(${checked_product_num.value}/${product_wholesale.value.num})` 
+			else text = '立即购买'
+		} else {
+			if(checked_product_num.value == 0) text = '请选择数量'
+			else text = '加入购物车'
+		}
+		return text 
+	})
 	watch(
 		() => props.spec_prices,
 		(n) => {
@@ -237,7 +251,7 @@
 			spec_prices_arr.value = arr.map(ele => {
 				ele.label = Object.keys(ele.specs)
 				ele.values = Object.values(ele.specs)
-				ele.checked_num = 0
+				ele.num = 0
 				ele.stock = +ele.stock
 				return {...ele}
 			})
@@ -262,7 +276,7 @@
 				product_num.value = product_num_max.value 
 			} else product_num.value = min.value
 			nextTick(() => {
-				countRef.value.init()
+				// countRef.value.init()
 			})
 		} 
 	)
@@ -273,14 +287,18 @@
 			if(val > product_num_max.value) {
 				product_num.value = product_num_max.value
 				nextTick(() => {
-					countRef.value.init()
+					// countRef.value.init()
 				})
 			}
 		} 
 	)
 	onMounted(async () => {  
 	})  
-	 
+	function setRef(el, i) { 
+		if(el) {
+			countRefs.value[i] = el
+		}
+	}
 	function onSelectSku(key, value) { 
 		if(sku_form.value[key] == value) {
 			value = ''
@@ -309,17 +327,14 @@
 		}
 	} 
 	
-	function numChange(e) { 
-		let num = e.value ? +e.value : 0
-		if(num < +min.value) {
-			num = +min.value
-		}
-		product_num.value = num
+	function numChange(e, id, index) {  
+		let i = spec_prices_arr.value.findIndex(ele => ele.id == id) 
+		if(i == -1) return;
+		spec_prices_arr.value[i].num = e.value 
 		nextTick(() => {
-			countRef.value.init()
+			countRefs.value[index].init()
 		})
-		
-		console.log(product_num.value)
+		 
 	}
 	
 	function numOverlimit(e) {
@@ -328,16 +343,16 @@
 	
 	function inputBlur(e) {
 		console.log(e) 
-		let num = e.value ? +e.value : 0
-		if(num != product_num.value) {
-			if(num < +min.value) {
-				num = +min.value
-			}
-			product_num.value = num
-			nextTick(() => {
-				countRef.value.init()
-			})
-		}
+		// let num = e.value ? +e.value : 0
+		// if(num != product_num.value) {
+		// 	if(num < +min.value) {
+		// 		num = +min.value
+		// 	}
+		// 	product_num.value = num
+		// 	nextTick(() => {
+		// 		// countRef.value.init()
+		// 	})
+		// }
 		
 	}
 	function onImgClick() {
@@ -360,28 +375,35 @@
 	}
 	function addCartBtn() {
 		let skuItem 
-		let i = findIndexby()  
-		if(i == -1) return
-		let img = props.spec_prices[i].img ? props.spec_prices[i].img : props.product_base_data.pic?.split('|')[0]
-		skuItem = {
-			...props.spec_prices[i],
-			img,
-			shop: props.product_shop_data || {},
-			name: props.product_base_data.name, 
-			freight_id: props.product_base_data.freight_id,
-			num: +product_num.value,
-			min: +props.product_base_data.wholesale.num,
-			price: props.product_base_data.wholesale.price,
-			checked: props.isOrder? true :false,
-		}  
+		let shop = props.product_shop_data || {}
+		// let i = findIndexby()  
+		// if(i == -1) return
+		// let img = props.spec_prices[i].img ? props.spec_prices[i].img : props.product_base_data.pic?.split('|')[0]
+		// skuItem = {
+		// 	...props.spec_prices[i],
+		// 	img, 
+		// 	num: +product_num.value,
+		// 	
+		// 	price: props.product_base_data.wholesale.price,
+		// 	checked: props.isOrder? true :false,
+		// }  
+		skuItem = uni.$u.deepClone(spec_prices_arr.value.filter(ele => ele.num > 0).map(ele => {
+			return {
+				...ele, 
+				name: props.product_base_data.name,
+				freight_id: props.product_base_data.freight_id,
+				checked: props.isOrder? true :false,
+				znum: +props.product_base_data.wholesale.num, 
+			}
+		}))
 		if(props.isOrder) {
-			let flag = cart.addOrderProduct( skuItem )
+			let flag = cart.addOrderProduct( skuItem, shop )
 			if(flag) {
 				emits('onConfirm')
 			}
 		}
 		else {
-			let flag = cart.addProduct2Cart( skuItem )
+			let flag = cart.addProduct2Cart( skuItem, shop )
 			if(flag) {
 				uni.showToast({
 					title: '成功加入购物车！',

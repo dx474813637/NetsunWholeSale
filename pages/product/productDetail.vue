@@ -301,7 +301,7 @@
 	const swiper_index = ref(0)
 	const showProductAttr = ref(false)
 	const showExpressPrice = ref(false)
-	const showProductSku = ref(true)
+	const showProductSku = ref(false)
 	const showProductShare = ref(false)
 	const isOrder = ref(false)
 	const kefu = ref({})

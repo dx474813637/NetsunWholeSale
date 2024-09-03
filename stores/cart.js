@@ -89,7 +89,8 @@ export const useCartStore = defineStore('cart', {
 			}
 			return arr
 		},
-		addProduct2Cart(data) {
+		addProduct2Cart(data, shop) {
+			console.log(data)
 			// if(!user.value.login) {
 			// 	let page = uni.$u.pages()[0] || {}
 			// 	base.setNoTokenNeedPermissionRoute({
@@ -106,76 +107,74 @@ export const useCartStore = defineStore('cart', {
 			// 	return
 			// }
 			
-			let { id: shopId } = data.shop;
-			data = {
-				...data, 
-				stock: +data.stock,
-				loading: false, 
-				checked: false
-			} 
-			let shop_index = this.cart_list.findIndex(ele => ele.shop.id == shopId);
-			// console.log(shop_index)
-			if(shop_index == -1) {
-				let shopObj = uni.$u.deepClone(data.shop)
-				delete data.shop
-				data.specs_arr = this.specs2Obj(data.specs)
+			let { id: shopId } = shop; 
+			data = data.map(ele => {
+				return {
+					...ele,  
+					specs_arr: this.specs2Obj(ele.specs), 
+					stock: +ele.stock,
+					loading: false, 
+					checked: false
+				} 
+			}) 
+			let shop_index = this.cart_list.findIndex(ele => ele.shop.id == shopId); 
+			if(shop_index == -1) {  
 				let datas = {  
 					shop: {
-						...shopObj, 
+						...shop, 
 						checked: false,
 						indeterminate: false
 					},
-					products: [data]
+					products: data
 				}
 				this.cart_list.unshift(datas) 
 			}
 			else { 
 				let datas = this.cart_list[shop_index] 
-				let productIndex = datas.products.findIndex(ele => ele.id == data.id);
-				data.shop.checked = datas.shop.checked; 
-				
-				datas.shop = deepMerge(datas.shop, data.shop) 
-				delete data.shop
-				if(productIndex == -1) {
-					if(datas.shop.checked) datas.shop.indeterminate = true
-					datas.shop.checked = false
-					data.specs_arr = this.specs2Obj(data.specs)
-					datas.products.unshift(data)
-				}else {
-					data.num = (+data.num) + (+datas.products[productIndex].num)
-					// console.log(data.num)
-					data.checked = datas.products[productIndex].checked 
-					let item = uni.$u.deepClone(datas.products[productIndex])
-					item = deepMerge(item, data)  
-					datas.products.splice(productIndex, 1)
-					datas.products.unshift(item) 
-				}
+				shop.checked = datas.shop.checked;  
+				datas.shop = deepMerge(datas.shop, shop) 
+				data.forEach(prod => { 
+					let productIndex = datas.products.findIndex(ele => ele.id == prod.id);  
+					if(productIndex == -1) {
+						if(datas.shop.checked) datas.shop.indeterminate = true
+						datas.shop.checked = false 
+						datas.products.unshift(prod)
+					}else {
+						prod.num = (+prod.num) + (+datas.products[productIndex].num)
+						// console.log(prod.num)
+						prod.checked = datas.products[productIndex].checked 
+						let item = uni.$u.deepClone(datas.products[productIndex])
+						item = deepMerge(item, prod)  
+						datas.products.splice(productIndex, 1)
+						datas.products.unshift(item) 
+					}
+				})
 			}
  
 			this.saveCartData2LocalStorage()
 
 			return true
 		},
-		addOrderProduct(data) { 
-			//直接购买下单的商品
-			let { id: shopId } = data.shop;
-			data = {
-				...data, 
-				stock: +data.stock,
-				loading: false, 
-				checked: false
-			} 
-			let shopObj = uni.$u.deepClone(data.shop)
-			delete data.shop
-			data.specs_arr = this.specs2Obj(data.specs)
+		addOrderProduct(data, shop) { 
+			//直接购买下单的商品 
+			data = data.map(ele => {
+				return {
+					...ele, 
+					specs_arr: this.specs2Obj(ele.specs),
+					stock: +ele.stock,
+					loading: false, 
+					checked: false
+				} 
+			}) 
 			let datas = {  
 				shop: {
-					...shopObj, 
+					...shop, 
 					checked: false,
 					indeterminate: false
 				},
-				products: [data]
+				products: data
 			}
+			console.log(datas)
 			this.is_order_data.unshift(datas)  
 			return true
 		},
@@ -192,7 +191,7 @@ export const useCartStore = defineStore('cart', {
 							// num: +(itemObj.stock > item.num? item.num : itemObj.stock),
 							num: +item.num,
 							price: itemObj.pprice, 
-							min: +itemObj.znum, 
+							// min: +itemObj.znum, 
 						} 
 						
 						if( item.min > item.stock ) {
