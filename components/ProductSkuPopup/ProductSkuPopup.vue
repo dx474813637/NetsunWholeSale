@@ -27,6 +27,36 @@
 				</view>
 				<scroll-view class="main-list" scroll-y >
 					<view class="u-p-30">
+						<view class="item u-m-b-40" v-for="item in spec_prices_arr" :key="item.id">
+							<view class="u-m-b-10">
+								<text 
+									class="u-font-26 u-p-8 u-p-l-12 u-p-r-12 u-radius-5 u-error-light-bg u-m-r-14" 
+									v-for="(val, index) in item.values" 
+									:key="index"
+								>{{val}}</text>
+							</view>
+							<view class="u-flex u-flex-items-end u-flex-between u-font-26 text-base">
+								<view class="u-flex u-flex-items-center">
+									<view class="u-m-r-20">价格：{{item.price}}元</view>
+									<view>库存：{{item.stock}}</view>
+								</view>
+								<view> 
+									<u-number-box  
+										v-model="item.checked_num" 
+										:disabled="product_num_disabled"
+										:max="item.stock"
+										:min="0"
+										asyncChange
+										inputWidth="60" 
+										@change="numChange"
+										@blur="inputBlur"
+										@overlimit="numOverlimit"
+									></u-number-box>
+								</view>
+							</view>
+						</view>
+					</view>
+					<view class="u-p-30">
 						<view class="item u-m-b-20"
 							v-for="(item) in sku_arr"
 							:key="item.label"
@@ -161,6 +191,8 @@
 	const countRef = ref()
 	const sku_form = ref({})
 	const sku_arr = ref([]) 
+	const spec_prices_arr = ref([]) 
+	
 	const product_num_max = ref(Number.MAX_SAFE_INTEGER)
 	const product_num = ref(1)
 	const min = computed(() => {  
@@ -198,6 +230,19 @@
 		return price 
 	})
 	
+	watch(
+		() => props.spec_prices,
+		(n) => {
+			let arr = uni.$u.deepClone(n)
+			spec_prices_arr.value = arr.map(ele => {
+				ele.label = Object.keys(ele.specs)
+				ele.values = Object.values(ele.specs)
+				ele.checked_num = 0
+				ele.stock = +ele.stock
+				return {...ele}
+			})
+		} 
+	)
 	watch(
 		() => props.sku,
 		(n) => {

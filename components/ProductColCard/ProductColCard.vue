@@ -44,7 +44,8 @@
 						<text>{{origin.price}}</text>
 					</view>
 					<view class="item " >
-						<view class="u-info">已售{{origin.sales_volume}}件</view>
+						<view class="u-warning" v-if="origin.wholesale.divide">佣金 {{origin.wholesale.divide}}%</view>
+						<view class="u-info" v-else>已售{{origin.sales_volume}}件</view>
 						<!-- <view class="u-info u-font-26">{{$u.timeFrom(new Date(origin.uptime).getTime(), false)}}</view> -->
 					</view>
 				</view>

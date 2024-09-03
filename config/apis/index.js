@@ -1,5 +1,5 @@
 // const list = require.context(".", true, /.js$/) 
-const list = import.meta.globEager('./interface/*.js');
+const list = import.meta.glob('./interface/*.js', { eager: true });
 let apis = {}
 for(let key in list) {
 	if(key != "./index.js") {

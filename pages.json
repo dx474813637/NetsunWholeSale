@@ -71,22 +71,6 @@
 			}
 
 		}, {
-			"path": "pages/login/login",
-			"style": {
-				"navigationBarTitleText": "登录",
-				"enablePullDownRefresh": false,
-				"navigationBarBackgroundColor": "#f8f8f8"
-			}
-
-		}, {
-			"path": "pages/login/reg",
-			"style": {
-				"navigationBarTitleText": "",
-				"enablePullDownRefresh": false,
-				"navigationBarBackgroundColor": "#f8f8f8"
-			}
-
-		}, {
 			"path": "pages/shop/shop",
 			"style": {
 				"navigationBarTitleText": "",
