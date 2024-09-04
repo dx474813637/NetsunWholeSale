@@ -43,41 +43,46 @@
 				</view>
 				<view class="shop-card-main">
 					<view 
-						class="product-item u-flex u-flex-items-start u-p-15"
-						v-for="product in item.products"
-						:key="product.id"
+						v-for="(product_s, i) in item.products"
+						:key="product_s.base.id"
+					>
+						<view class="product-item u-flex u-flex-items-start u-p-15" 
+							v-for="product in product_s.list"
+							:key="product.id"
 						> 
-						<view class="item" >
-							<up-image 
-							show-loading
-							:src="product.img" 
-							width="80px" 
-							height="80px" 
-							radius="8"
-							></up-image>
-						</view>
-						<view class="item u-flex-column u-flex-between u-flex-1 u-m-l-15 info" >
-							<view class="title u-line-1">
-								{{product.name}}
+							<view class="item" >
+								<up-image 
+								show-loading
+								:src="product.img" 
+								width="80px" 
+								height="80px" 
+								radius="8"
+								></up-image>
 							</view>
-							<view class="sku u-line-2 u-info u-font-24 u-flex-1 u-m-b-20" >
-								<text class="u-m-r-15" v-for="(specs, index) in product.specs_arr" :key="index">
-									<text>{{specs.label}}：{{specs.value}}；</text>
-								</text>
-							</view>
-							<view class="info u-flex u-flex-between u-flex-items-center">
-								<view class="item">
-									<view class="u-flex u-flex-items-end" style="color: #f00;">
-										<text class="u-font-24">￥</text>
-										<text class="u-font-32">{{product.price}}</text> 
-									</view>
+							<view class="item u-flex-column u-flex-between u-flex-1 u-m-l-15 info" >
+								<view class="title u-line-1">
+									{{product_s.base.name}}
 								</view>
-								<view class="item u-m-r-15">
-									x {{product.num}}
+								<view class="sku u-line-2 u-info u-font-24 u-flex-1 u-m-b-20" >
+									<text class="u-m-r-15" v-for="(specs, index) in product.specs_arr" :key="index">
+										<text>{{specs.label}}：{{specs.value}}；</text>
+									</text>
+								</view>
+								<view class="info u-flex u-flex-between u-flex-items-center">
+									<view class="item">
+										<view class="u-flex u-flex-items-end" style="color: #f00;">
+											<text class="u-font-24">￥</text>
+											<text class="u-font-32">{{product.price}}</text> 
+										</view>
+									</view>
+									<view class="item u-m-r-15">
+										x {{product.num}}
+									</view>
 								</view>
 							</view>
 						</view>
 					</view>
+					
 					
 				</view>
 			</view>
@@ -242,8 +247,8 @@
 	}
 	
 	async function createOrder() {
-		let arr = dataList.value.map(ele => ele.products.map(item => ({id: item.id, num: item.num}))).reduce((a, b) => a.concat(b))
-		 
+		let arr = dataList.value.map(ele => ele.products.map(item => item.list.map(s => ({id: s.id, num: s.num})) ).reduce((a, b) => a.concat(b))).reduce((a, b) => a.concat(b))
+		console.log(arr) 
 		const res = await $api.create_order({
 			params: {
 				address_id: addressData.value.id,

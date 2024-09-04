@@ -30,14 +30,14 @@
 						<view class="item u-m-b-40" v-for="(item, i) in spec_prices_arr" :key="item.id">
 							<view class="u-m-b-10">
 								<text 
-									class="u-font-26 u-p-8 u-p-l-12 u-p-r-12 u-radius-5 u-error-light-bg u-m-r-14" 
-									v-for="(val, index) in item.values" 
+									class="u-font-26 u-p-8 u-p-l-12 u-p-r-12 u-radius-5 u-info-light-bg u-m-r-14" 
+									v-for="(specs, index) in item.specs_arr" 
 									:key="index"
-								>{{val}}</text>
+								>{{specs.label}}：{{specs.value}}</text>
 							</view>
 							<view class="u-flex u-flex-items-center u-flex-between u-font-26 text-base">
 								<view class="u-flex u-flex-items-center">
-									<view class="u-m-r-20">价格：{{item.price}}元</view>
+									<view class="u-m-r-20">价格：<text class="u-error">{{item.price}}元</text></view>
 									<view>库存：{{item.stock}}</view>
 								</view>
 								<view> 
@@ -252,9 +252,11 @@
 				ele.label = Object.keys(ele.specs)
 				ele.values = Object.values(ele.specs)
 				ele.num = 0
+				ele.specs_arr = cart.specs2Obj(ele.specs)
 				ele.stock = +ele.stock
 				return {...ele}
-			})
+			}).filter(item => item.stock != 0)
+			console.log(spec_prices_arr.value)
 		} 
 	)
 	watch(
@@ -380,14 +382,14 @@
 		// if(i == -1) return
 		// let img = props.spec_prices[i].img ? props.spec_prices[i].img : props.product_base_data.pic?.split('|')[0]
 		// skuItem = {
-		// 	...props.spec_prices[i],
+		// 	...props.spec_prices[i],s
 		// 	img, 
 		// 	num: +product_num.value,
 		// 	
 		// 	price: props.product_base_data.wholesale.price,
 		// 	checked: props.isOrder? true :false,
 		// }  
-		skuItem = uni.$u.deepClone(spec_prices_arr.value.filter(ele => ele.num > 0).map(ele => {
+		skuItem = spec_prices_arr.value.filter(ele => ele.num > 0).map(ele => {
 			return {
 				...ele, 
 				name: props.product_base_data.name,
@@ -395,15 +397,21 @@
 				checked: props.isOrder? true :false,
 				znum: +props.product_base_data.wholesale.num, 
 			}
-		}))
+		}) 
+		let product = {
+			base: props.product_base_data,
+			checked: props.isOrder? true :false,
+			znum: +props.product_base_data.wholesale.num, 
+			list: spec_prices_arr.value.filter(ele => ele.num > 0) 
+		}
 		if(props.isOrder) {
-			let flag = cart.addOrderProduct( skuItem, shop )
+			let flag = cart.addOrderProduct( skuItem, shop, product )
 			if(flag) {
 				emits('onConfirm')
 			}
 		}
 		else {
-			let flag = cart.addProduct2Cart( skuItem, shop )
+			let flag = cart.addProduct2Cart( skuItem, shop, product )
 			if(flag) {
 				uni.showToast({
 					title: '成功加入购物车！',
@@ -441,7 +449,7 @@
 		}
 	} 
 	.main-list {
-		height: 50vh;
+		height: 55vh;
 		box-sizing: border-box;
 		.item {
 			.label {

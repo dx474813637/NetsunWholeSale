@@ -43,61 +43,78 @@
 					</view>
 					<view class="shop-card-main">
 						<view 
-							class="product-item u-flex u-flex-items-start u-p-15"
-							v-for="product in item.products"
-							:key="product.id" 
+							class="product-item u-flex u-flex-items-start u-p-15 u-p-t-30 u-p-b-30 "
+							:class="{
+								'u-border-top': product_i != 0
+							}"
+							v-for="(product, product_i) in item.products"
+							:key="product.base.id" 
 							>
 							<view class="disabled-bg" :class="{
 								disabled: product.disabled && !manageMode
 							}"></view>
-							<view class="item checkbox u-flex u-flex-items-center u-flex-center u-p-10"> 
+									<!-- :disabled="(product.disabled && !manageMode) || (product.num < product.znum) " -->
+							<view class="item checkbox u-flex u-flex-items-start u-flex-center u-p-10"> 
 								<u-checkbox 
-								shape="circle" 
-								:activeColor="themeColor"
-								:disabled="product.disabled && !manageMode"
-								:name="product.id"
-								size="22"
+									shape="circle" 
+									:activeColor="themeColor"
+									:disabled="(product.disabled || product.num < product.znum) && !manageMode "
+									:name="product.base.id"
+									size="22"
 								></u-checkbox>  
-							</view>
-							<view class="item" @click="base.handleGoto({url: '/pages/product/productDetail', params: {id: product.pid}})">
-								<up-image 
-								show-loading
-								:src="product.img" 
-								width="80px" 
-								height="80px" 
-								radius="8"
-								></up-image>
-							</view>
-							<view class="item u-flex-column u-flex-between u-flex-1 u-m-l-15 info" >
-								<view class="title u-line-1" @click="base.handleGoto({url: '/pages/product/productDetail', params: {id: product.pid}})">
-									{{product.name}}
+							</view> 
+							<view class="item u-flex-column u-flex-between u-flex-1 info" >
+								<view class="title u-line-2 u-m-b-14 u-font-30" 
+								@click="base.handleGoto({url: '/pages/product/productDetail', params: {id: product.base.id}})" 
+								>
+									{{product.base.name}}
 								</view>
-								<view class="sku u-line-2 u-info u-font-24 u-flex-1 u-m-b-20" @click="base.handleGoto({url: '/pages/product/productDetail', params: {id: product.pid}})">
-									<text class="u-m-r-15" v-for="(specs, index) in product.specs_arr" :key="index">
-										<text>{{specs.label}}：{{specs.value}}；</text>
-									</text>
+								<view class="u-error-light-bg u-error u-p-10 u-radius-4 u-flex u-flex-items-center u-font-14 u-flex-between u-m-b-18" 
+									v-if="product.num < product.znum"
+									>
+									<view class="item">注意该商品起批数量</view>
+									<view class="item">（{{product.num}}/{{product.znum}}）</view>
 								</view>
-								<view class="info u-flex u-flex-between u-flex-items-center">
-									<view class="item">
-										<view class="u-flex u-flex-items-end" style="color: #f00;">
-											<text class="u-font-24">￥</text>
-											<text class="u-font-32">{{product.price}}</text> 
+								<view class="u-m-b-20 u-flex u-flex-items-center " v-for="(sku, sku_i) in product.list" :key="sku.id">
+									<up-image
+										show-loading
+										:src="sku.img" 
+										width="50px" 
+										height="50px" 
+										radius="8"
+									></up-image>
+									<view class="u-m-l-20 u-flex-1 u-flex-column u-flex-between" style="height: 50px">
+										<view class="sku u-line-2 u-info u-font-24 u-flex-1 u-m-b-10" @click="base.handleGoto({url: '/pages/product/productDetail', params: {id: product.base.id}})">
+											<text class="u-m-r-15" v-for="(specs, index) in sku.specs_arr" :key="index">
+												<text>{{specs.label}}：{{specs.value}}；</text>
+											</text>
+										</view>
+										<view class="info u-flex u-flex-between u-flex-items-center">
+											<view class="item">
+												<view class="u-flex u-flex-items-end" style="color: #f00;">
+													<text class="u-font-24">￥</text>
+													<text class="u-font-32">{{sku.price}}</text> 
+												</view>
+											</view>
+											<view class="item u-m-r-15">
+												<u-number-box
+													:ref="(el) => setRef(el, sku.id)" 
+													:name="sku.id"
+													v-model="sku.num"  
+													:max="+sku.stock"
+													:disabled="sku.disabled"
+													:min="0" 
+													asyncChange
+													:buttonSize="25"
+													@blur="(e) => {inputBlur(e, product.base.id)}"
+													@change="(e) => {numChange(e, product.base.id)}" 
+												></u-number-box>
+											</view>
 										</view>
 									</view>
-									<view class="item u-m-r-15">
-										<u-number-box
-											:ref="(el) => setRef(el, product.id)" 
-											:name="product.id"
-											v-model="product.num"  
-											:max="+product.stock"
-											:disabled="product.disabled"
-											:min="1" 
-											asyncChange
-											:buttonSize="25"
-											@change="numChange" 
-											></u-number-box>
-									</view>
+									
 								</view>
+								
 							</view>
 						</view>
 						
@@ -204,16 +221,16 @@
 			let arr = [];
 			cart_list.value.forEach(ele => {
 				ele.products.forEach(item => {
-					if(item.checked) arr.push(item.id)
+					if(item.checked) arr.push(item.base.id)
 				})
-			})
+			}) 
 			return arr
 		},
 		set(n) { 
 			let cart = uni.$u.deepClone(cart_list.value)
 			cart.forEach(ele => { 
 				ele.products.forEach(item => {
-					item.checked = n.includes(item.id) ? true : false
+					item.checked = n.includes(item.base.id) ? true : false
 				})
 			})
 			cart_list.value = cart
@@ -232,7 +249,7 @@
 			let cart = uni.$u.deepClone(cart_list.value)
 			cart.forEach(ele => { 
 				ele.products.forEach(item => { 
-					if(item.disabled == true && !manageMode.value) { 
+					if((item.disabled == true || item.num < item.znum) && !manageMode.value) { 
 						item.checked = false
 					}else {
 						item.checked = n[0] == 'all' ? true : false 
@@ -278,7 +295,7 @@
 			cart.saveCartData2LocalStorage()
 		},
 		{deep: true}
-	)
+	) 
 	watch(
 		() => manageMode.value,
 		(n) => {
@@ -286,7 +303,7 @@
 				let cart = uni.$u.deepClone(cart_list.value)
 				cart.forEach(ele => { 
 					ele.products.forEach(item => { 
-						if(item.disabled) { 
+						if(item.disabled || item.num < item.znum) { 
 							item.checked = false
 						}
 					})
@@ -296,7 +313,7 @@
 		}
 	)
 	onLoad(async () => {
-		console.log(cate_list.value)
+		console.log(sku_ids.value)
 		if(sku_ids.value) {
 			checkPidSku()
 		}
@@ -342,7 +359,8 @@
 			success: function (res) {
 				if (res.confirm) {
 					console.log('用户点击确定');
-					let idsArr = cart_list.value.map(ele => ele.products.filter(item => item.checked).map(item => item.id)).reduce((a, b) => a.concat(b))
+					let idsArr = cart_list.value.map(ele => ele.products.filter(item => item.checked).map(item => item.list.map(s => s.id)).reduce((a, b) => a.concat(b))).reduce((a, b) => a.concat(b))
+					console.log(idsArr)
 					cart.removeProductsById(idsArr) 
 				} else if (res.cancel) {
 					console.log('用户点击取消');
@@ -354,17 +372,35 @@
 	function checkboxChange(e) {
 		console.log(e, cart_list.value)
 	}
-	
-	function numChange(e) { 
+	function inputBlur(e, product_id) {
+		console.log('inputBlur', e)
+	}
+	function numChange(e, product_id) { 
 		// console.log(e, numBoxRefs[e.name])
 		// product_num.value = e.value
-		cart_list.value.some(ele => ele.products.some(item => {
-			if(item.id == e.name) {
-				item.num = e.value
-				return true
-			}
+		let arr = []
+		cart_list.value.some((ele, ele_i) => ele.products.some((item, item_i) => {
+			item.list.some((sku, sku_i) => {
+				if(sku.id == e.name) { 
+					sku.num = e.value 
+					arr = [ele_i, item_i, sku_i]
+					return true
+				}
+				return false
+			})
+			item.num = item.list.reduce((prev, sku) => prev + sku.num, 0)  // 商品总数量 
+			if(item.num < item.znum) item.checked = false // 判断是否小于商品起批数
 			return false
 		}))
+		if(e.value == 0) {
+			cart_list.value[arr[0]].products[arr[1]].list.splice(arr[2], 1)
+			if(cart_list.value[arr[0]].products[arr[1]].list.length == 0) {
+				cart_list.value[arr[0]].products.splice(arr[1], 1)
+			}
+			if(cart_list.value[arr[0]].products.length == 0) {
+				cart_list.value.splice(arr[0], 1)
+			}
+		} 
 		nextTick(() => {
 			numBoxRefs[e.name].init()
 		})

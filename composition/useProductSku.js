@@ -9,7 +9,7 @@ const { cart_list, cart_list_num, cart_list_checked, cart_list_checked_num, cart
 function useProductSku(){
 	const sku_ids = computed(() => cart_list.value.map(ele => {
 		return ele.products.filter(item => !item.disabled)
-							.map(item => item.id)
+							.map(item => item.list.map(s => s.id).join(','))
 							.join(',')
 	}).filter(ele => ele).join(','))
     const sku2treeData = (skuStr) => {
